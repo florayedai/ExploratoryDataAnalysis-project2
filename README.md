@@ -1,9 +1,7 @@
 # Exploratory Data Analysis Project 2
 
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+
 
 ## Instructions
 
@@ -57,10 +55,41 @@ as long as each of those files is in your current working directory (check by ca
 ## 1.Have total emissions from PM2.5 decreased in the United States from 1999 to 2008? Using the base plotting system, make a plot showing the total PM2.5 emission from all sources for each of the years 1999, 2002, 2005, and 2008.
 
 
-```{r}
-library(dplyr)
-library(ggplot2)
 
+```r
+library(dplyr)
+```
+
+```
+## Warning: package 'dplyr' was built under R version 3.3.3
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
+library(ggplot2)
+```
+
+```
+## Warning: package 'ggplot2' was built under R version 3.3.3
+```
+
+```r
 NEI <- readRDS("summarySCC_PM25.rds")
 SCC <- readRDS("Source_Classification_Code.rds")
 
@@ -74,9 +103,12 @@ with(emissionByYear, barplot(totalEmissions/1000.0, names =year,
                             col= c("red", "green", "blue", "purple")))
 ```
 
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-1.png)
+
 ## Question 2
 ## 2. Have total emissions from PM2.5 decreased in the Baltimore City, Maryland (fips == "24510") from 1999 to 2008? Use the base plotting system to make a plot answering this question.
-```{r}
+
+```r
 baltimore <- summarise(group_by(subset(NEI, fips == "24510"), year), totalEmissions = sum(Emissions))
 
 with(baltimore, barplot(totalEmissions, 
@@ -86,13 +118,14 @@ with(baltimore, barplot(totalEmissions,
                             ylim  = c(0,4000),
                             main  = expression("Total PM"[2.5]*" Emissions in Baltimore"), 
                             col   = c("red", "green", "blue", "purple")))
-
-
 ```
+
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png)
 
 ## Question 3
 ## 3. Of the four types of sources indicated by the type (point, nonpoint, onroad, nonroad) variable, which of these four sources have seen decreases in emissions from 1999-2008 for Baltimore City? Which have seen increases in emissions from 1999-2008? Use the ggplot2 plotting system to make a plot answer this question.
-```{r}
+
+```r
 baltimore <- summarise(group_by(subset(NEI, fips == "24510"), type, year), totalEmission = sum(Emissions))
 baltimore$type <- factor(baltimore$type, levels=c("ON-ROAD", "NON-ROAD", "POINT", "NONPOINT"))  
 
@@ -102,13 +135,15 @@ g <- g + ggtitle(expression("Total PM"[2.5]*" Emissions in Baltimore by type"))
 g <- g + labs(x = "year") + labs(y = expression("Total PM"[2.5]*" Emissions in ton"))
 
 print(g)
-
 ```
+
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png)
 
 ## Question 4
 ## 4. Across the United States, how have emissions from coal combustion-related sources changed from 1999-2008?
 
-```{r}
+
+```r
 coalSCC = SCC[grepl("coal", SCC$Short.Name, ignore.case=TRUE), "SCC"]
 coalNEI <- NEI[NEI$SCC %in% coalSCC, ]
 
@@ -120,12 +155,14 @@ g <- g + ggtitle(expression("Total PM"[2.5]*" Emissions from coal"))
 g <- g + labs(x = "year") + labs(y = expression("Total PM"[2.5]*" Emissions from coal in ton"))
 
 print(g)
-
 ```
+
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png)
 ## Question 5
 ## 5. How have emissions from motor vehicle sources changed from 1999-2008 in Baltimore City?
 
-```{r}
+
+```r
 motorVehicle  <- summarise(group_by(subset(NEI, fips == "24510" & type == 'ON-ROAD'), year), totalEmissions = sum(Emissions))
 
 g <- ggplot(motorVehicle, aes(x = year, y = totalEmissions, fill = year))
@@ -134,12 +171,14 @@ g <- g + ggtitle(expression("Total emissions from motor vehicle in Baltimore Cit
 g <- g + labs(x = "year") + labs(y = expression("Total PM"[2.5]*" Emissions in ton"))
 
 print(g)
-
 ```
+
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png)
 ## Question 6
 ## 6. How have emissions from motor vehicle sources changed from 1999-2008 in Baltimore City?
 
-```{r}
+
+```r
 baltimore  <- summarise(group_by(subset(NEI, fips == "24510" & type == 'ON-ROAD'), year), totalEmissions = sum(Emissions))
 baltimore$location <- "Baltimore"
 
@@ -155,5 +194,6 @@ g <- g + ggtitle(expression("Emissions from motor vehicle sources in Baltimore a
 g <- g + labs(x = "year") + labs(y = expression("Total PM"[2.5]*" Emissions in ton")) 
  
 print(g)
-
 ```
+
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png)
